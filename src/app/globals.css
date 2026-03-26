@@ -1,9 +1,170 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body, #__next { height: 100%; background: #0a0a0f; }
-.leaflet-container { background: #1a1a2e !important; }
-.leaflet-popup-content-wrapper {
-  background: #0d0d0d !important;
-  border: 1px solid rgba(0,229,255,0.2) !important;
-  border-radius: 8px !important;
+@import "tailwindcss";
+
+:root {
+  --bg-base: #0a0a0f;
+  --bg-card: #0d0d14;
+  --bg-glass: rgba(13, 13, 20, 0.7);
+  --border-dim: rgba(0, 229, 255, 0.08);
+  --border-mid: rgba(0, 229, 255, 0.18);
+  --border-hot: rgba(0, 229, 255, 0.45);
+  --cyan: #00e5ff;
+  --cyan-dim: rgba(0, 229, 255, 0.15);
+  --cyan-glow: rgba(0, 229, 255, 0.35);
+  --gold: #ffd700;
+  --green: #39ff14;
+  --red: #ff3b5c;
+  --text-primary: #e8f4f8;
+  --text-muted: rgba(232, 244, 248, 0.45);
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 }
-.leaflet-popup-tip { background: #0d0d0d !important; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hot); }
+
+/* ─── Leaflet overrides ─────────────────────────────────── */
+.leaflet-container { background: #0a0a0f !important; }
+.leaflet-control-zoom a {
+  background: var(--bg-card) !important;
+  color: var(--cyan) !important;
+  border-color: var(--border-mid) !important;
+}
+.leaflet-control-zoom a:hover { background: var(--cyan-dim) !important; }
+.leaflet-control-attribution { display: none !important; }
+.leaflet-popup-content-wrapper {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-mid) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+}
+.leaflet-popup-tip { background: var(--bg-card) !important; }
+
+/* ─── Neon shimmer on stat cards ────────────────────────── */
+@keyframes shimmer-sweep {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.stat-card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.stat-card-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(0, 229, 255, 0.08) 50%,
+    rgba(0, 229, 255, 0.14) 55%,
+    transparent 65%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 3.5s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ─── Skeleton loader ────────────────────────────────────── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.9; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 229, 255, 0.04) 25%,
+    rgba(0, 229, 255, 0.10) 50%,
+    rgba(0, 229, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.skeleton-text {
+  height: 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeleton-block {
+  border-radius: 8px;
+}
+
+/* ─── Neon border pulse ──────────────────────────────────── */
+@keyframes border-glow {
+  0%, 100% { box-shadow: 0 0 0 1px var(--border-mid), 0 0 8px var(--cyan-dim); }
+  50%       { box-shadow: 0 0 0 1px var(--border-hot), 0 0 20px var(--cyan-glow); }
+}
+
+.border-glow-active {
+  animation: border-glow 2.5s ease-in-out infinite;
+}
+
+/* ─── Alert flash (stall events) ─────────────────────────── */
+@keyframes alert-flash {
+  0%, 100% { background: rgba(255, 59, 92, 0.06); border-color: rgba(255, 59, 92, 0.2); }
+  50%       { background: rgba(255, 59, 92, 0.15); border-color: rgba(255, 59, 92, 0.5); }
+}
+
+.alert-flash {
+  animation: alert-flash 1.8s ease-in-out 3;
+}
+
+/* ─── Bento grid utilities ───────────────────────────────── */
+.bento-grid {
+  display: grid;
+  gap: 12px;
+}
+
+/* ─── Glass card base ────────────────────────────────────── */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-dim);
+  border-radius: 12px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-mid);
+  box-shadow: 0 0 24px var(--cyan-dim);
+}
+
+/* ─── Scan line overlay (optional atmosphere) ────────────── */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}

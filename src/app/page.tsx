@@ -104,10 +104,12 @@ function FleetCard({
   shuttle,
   isStalled,
   index,
+  eta,
 }: {
   shuttle: any;
   isStalled: boolean;
   index: number;
+  eta?: number;
 }) {
   const color = COLOR[shuttle.name] ?? "#00e5ff";
 
@@ -205,18 +207,9 @@ function FleetCard({
         >
           {[
             { label: "SPEED", value: `${(shuttle.speed ?? 0).toFixed(1)} mph` },
-            {
-              label: "HDG",
-              value: `${(shuttle.heading ?? 0).toFixed(0)}°`,
-            },
-            {
-              label: "LAT",
-              value: shuttle.lat?.toFixed(4) ?? "—",
-            },
-            {
-              label: "LNG",
-              value: shuttle.lon?.toFixed(4) ?? "—",
-            },
+            { label: "ETA", value: eta !== undefined ? `~${eta} min` : "—" },
+            { label: "LAT", value: shuttle.lat?.toFixed(4) ?? "—" },
+            { label: "LNG", value: shuttle.lon?.toFixed(4) ?? "—" },
           ].map((m) => (
             <div
               key={m.label}
@@ -361,6 +354,7 @@ export default function CommandCenter() {
     isMock: simMode,
   } = useShuttles();
   const [hydrated, setHydrated] = useState(false);
+  const [shuttleEtas, setShuttleEtas] = useState<Record<string, number>>({});
   const stalledIds = new Set(stallEvents.map((e) => e.shuttleId));
 
   useEffect(() => {
@@ -658,6 +652,7 @@ export default function CommandCenter() {
                       shuttle={s}
                       isStalled={stalledIds.has(s.id)}
                       index={i}
+                      eta={shuttleEtas[s.id]}
                     />
                   ))}
                   {shuttles.length === 0 && (
